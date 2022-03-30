@@ -38,17 +38,16 @@ message CreateSimulationRequest {
   string world_container_image = 2;
   string world_file = 3;
   bool enable_viewer = 4;
+  string gazebo_container_image = 5;
+  string gazebo_model_service_container_image = 6;
+  string gazebo_viewer_container_image = 7;
 }
-
-message CreateSimulationResponse {
-}
+message CreateSimulationResponse {}
 
 message DestroySimulationRequest {
   string name = 1;
 }
 message DestroySimulationResponse {}
-
-
 
 message ListModelsRequest {
   string simulation_name = 1;
@@ -68,7 +67,6 @@ message AddModelRequest {
 
   Location pos = 7;
   Rotation rot = 8;
-  
 }
 message AddModelResponse {}
 
