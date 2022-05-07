@@ -88,25 +88,14 @@ message LogsResponse {
 }
 
 message ShellRequest {
-  string simulation_name = 1;
-  string model_name = 2;
-  string container_name = 3;
-  bytes data = 4;
+  string command = 1;
+  repeated string args = 2;
+  uint32 width = 3;
+  uint32 height = 4;
+  bytes data = 5;
 }
 message ShellResponse {
   bytes data = 1;
-  bool is_stderr = 2;
-}
-
-message RunRequest {
-  string simulation_name = 1;
-  string model_name = 2;
-  string image_name = 3;
-  bytes data = 4;
-}
-message RunResponse {
-  bytes data = 1;
-  bool is_stderr = 2;
 }
 
 service SimulationCoordinator {
@@ -124,7 +113,5 @@ service SimulationCoordinator {
 
   rpc Logs(LogsRequest) returns (stream LogsResponse) {}
 
-  rpc Shell(stream ShellRequest) returns (stream ShellResponse) {}
-  
-  rpc Run(stream RunRequest) returns (stream RunResponse) {}
+  rpc Shell(stream ShellRequest) returns (stream ShellResponse) {} 
 }

@@ -30,7 +30,6 @@ type SimulationCoordinatorClient interface {
 	RemoveModel(ctx context.Context, in *RemoveModelRequest, opts ...grpc.CallOption) (*RemoveModelResponse, error)
 	Logs(ctx context.Context, in *LogsRequest, opts ...grpc.CallOption) (SimulationCoordinator_LogsClient, error)
 	Shell(ctx context.Context, opts ...grpc.CallOption) (SimulationCoordinator_ShellClient, error)
-	Run(ctx context.Context, opts ...grpc.CallOption) (SimulationCoordinator_RunClient, error)
 }
 
 type simulationCoordinatorClient struct {
@@ -158,37 +157,6 @@ func (x *simulationCoordinatorShellClient) Recv() (*ShellResponse, error) {
 	return m, nil
 }
 
-func (c *simulationCoordinatorClient) Run(ctx context.Context, opts ...grpc.CallOption) (SimulationCoordinator_RunClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SimulationCoordinator_ServiceDesc.Streams[2], "/simulations.SimulationCoordinator/Run", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &simulationCoordinatorRunClient{stream}
-	return x, nil
-}
-
-type SimulationCoordinator_RunClient interface {
-	Send(*RunRequest) error
-	Recv() (*RunResponse, error)
-	grpc.ClientStream
-}
-
-type simulationCoordinatorRunClient struct {
-	grpc.ClientStream
-}
-
-func (x *simulationCoordinatorRunClient) Send(m *RunRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *simulationCoordinatorRunClient) Recv() (*RunResponse, error) {
-	m := new(RunResponse)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // SimulationCoordinatorServer is the server API for SimulationCoordinator service.
 // All implementations must embed UnimplementedSimulationCoordinatorServer
 // for forward compatibility
@@ -201,7 +169,6 @@ type SimulationCoordinatorServer interface {
 	RemoveModel(context.Context, *RemoveModelRequest) (*RemoveModelResponse, error)
 	Logs(*LogsRequest, SimulationCoordinator_LogsServer) error
 	Shell(SimulationCoordinator_ShellServer) error
-	Run(SimulationCoordinator_RunServer) error
 	mustEmbedUnimplementedSimulationCoordinatorServer()
 }
 
@@ -232,9 +199,6 @@ func (UnimplementedSimulationCoordinatorServer) Logs(*LogsRequest, SimulationCoo
 }
 func (UnimplementedSimulationCoordinatorServer) Shell(SimulationCoordinator_ShellServer) error {
 	return status.Errorf(codes.Unimplemented, "method Shell not implemented")
-}
-func (UnimplementedSimulationCoordinatorServer) Run(SimulationCoordinator_RunServer) error {
-	return status.Errorf(codes.Unimplemented, "method Run not implemented")
 }
 func (UnimplementedSimulationCoordinatorServer) mustEmbedUnimplementedSimulationCoordinatorServer() {}
 
@@ -404,32 +368,6 @@ func (x *simulationCoordinatorShellServer) Recv() (*ShellRequest, error) {
 	return m, nil
 }
 
-func _SimulationCoordinator_Run_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SimulationCoordinatorServer).Run(&simulationCoordinatorRunServer{stream})
-}
-
-type SimulationCoordinator_RunServer interface {
-	Send(*RunResponse) error
-	Recv() (*RunRequest, error)
-	grpc.ServerStream
-}
-
-type simulationCoordinatorRunServer struct {
-	grpc.ServerStream
-}
-
-func (x *simulationCoordinatorRunServer) Send(m *RunResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *simulationCoordinatorRunServer) Recv() (*RunRequest, error) {
-	m := new(RunRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // SimulationCoordinator_ServiceDesc is the grpc.ServiceDesc for SimulationCoordinator service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -471,12 +409,6 @@ var SimulationCoordinator_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "Shell",
 			Handler:       _SimulationCoordinator_Shell_Handler,
-			ServerStreams: true,
-			ClientStreams: true,
-		},
-		{
-			StreamName:    "Run",
-			Handler:       _SimulationCoordinator_Run_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
